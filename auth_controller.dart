@@ -1,11 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthController {
-  static FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  static FirebaseAuth firebase = FirebaseAuth.instance;
 
-  static Future<User> signInAnonymous() async {
+  static var userStream;
+
+  static Future<User> register(String email, String password) async {
     try {
-      UserCredential userCredential = await firebaseAuth.signInAnonymously();
+      UserCredential userCredential = await firebase
+          .createUserWithEmailAndPassword(email: email, password: password);
       return userCredential.user;
     } catch (e) {
       print(e.toString());
@@ -13,31 +16,20 @@ class AuthController {
     }
   }
 
-  static Future<User> register(String email, String password) async {
-    try {
-      UserCredential userCredential = await firebaseAuth
-          .createUserWithEmailAndPassword(email: email, password: password);
-      return userCredential.user;
-    } catch (e) {
-      print(e.toString());
-      throw e;
-    }
-  }
-
   static Future<User> login(String email, String password) async {
     try {
-      UserCredential userCredential = await firebaseAuth
-          .signInWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential = await firebase.signInWithEmailAndPassword(
+          email: email, password: password);
       return userCredential.user;
     } catch (e) {
       print(e.toString());
-      throw e;
+      return null;
     }
   }
 
   static Future<void> logout() async {
-    firebaseAuth.signOut();
+    firebase.signOut();
   }
 
-  static Stream<User> get userStream => firebaseAuth.authStateChanges();
+  static Stream<User> get ustream => firebase.authStateChanges();
 }
